@@ -1,36 +1,17 @@
 const { SlashCommandBuilder, PermissionFlagsBits, ButtonBuilder, ActionRowBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
 
-function parseDuration(duration) {
-  const match = duration.match(/^(\d+)(s|m|h)$/);
-  if (!match) return null;
-
-  const value = parseInt(match[1]);
-  const unit = match[2];
-
-  switch (unit) {
-    case 's': return value * 1000;
-    case 'm': return value * 60 * 1000;
-    case 'h': return value * 60 * 60 * 1000;
-    default: return null;
-  }
-}
-
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('timeout')
-    .setDescription('Timeout someone for whatever reason.')
+    .setName('ban')
+    .setDescription('Ban someone for whatever reason.')
     .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
     .addUserOption(option => 
       option.setName('user')
-        .setDescription('The user to timeout')
-        .setRequired(true))
-    .addStringOption(option => 
-      option.setName('duration')
-        .setDescription('Duration of the timeout. s = second, m = minute, h = hour')
+        .setDescription('The user to ban')
         .setRequired(true))
     .addStringOption(option => 
       option.setName('reason')
-        .setDescription('The reason for the timeout')
+        .setDescription('The reason for the ban')
         .setRequired(true)),
 
   async execute(interaction) {
@@ -38,13 +19,6 @@ module.exports = {
 
     const user = interaction.options.getUser('user');
     const reason = interaction.options.getString('reason');
-    const duration = interaction.options.getString('duration');
-
-    // Parse the duration
-    const durationMs = parseDuration(duration);
-    if (durationMs === null) {
-      return interaction.reply('Invalid duration format. Use s for seconds, m for minutes, or h for hours.');
-    }
 
     const reasonEmbed = new EmbedBuilder()
       .setColor(0xfc0303)
@@ -53,7 +27,7 @@ module.exports = {
 
     const confirm = new ButtonBuilder()
 			.setCustomId('confirm')
-			.setLabel('Confirm Timeout')
+			.setLabel('Confirm Ban')
 			.setStyle(ButtonStyle.Danger);
 
 		const cancel = new ButtonBuilder()
@@ -64,7 +38,7 @@ module.exports = {
     const row = new ActionRowBuilder().addComponents(cancel, confirm);
 
 		const response = await interaction.reply({
-			content: `Are you sure you want to timeout **${user}** for **${duration}**?`,
+			content: `Are you sure you want to ban **${user}**?`,
 			components: [row],
       embeds: [reasonEmbed]
 		});
@@ -80,15 +54,15 @@ module.exports = {
 
       if (confirmation.customId === 'confirm') {
         await user.send({
-          content: `You have been timed out for **${duration}** in **${interaction.guild.name}**`,
+          content: `You have been banned from **${interaction.guild.name}**`,
           embeds: [reasonEmbed]
         });
         
-        await member.timeout(durationMs, reason);
+        await interaction.guild.members.ban(member, { reason });
 
-        await confirmation.update({ content: `User **${user.tag}** has been timed out for **${duration}**`, components: [], embeds: [reasonEmbed] });
+        await confirmation.update({ content: `User **${user.tag}** has been banned`, components: [], embeds: [reasonEmbed] });
       } else if (confirmation.customId === 'cancel') {
-        await confirmation.update({ content: 'Timeout cancelled', components: [], embeds: [] });
+        await confirmation.update({ content: 'Ban cancelled', components: [], embeds: [] });
       }
 
     } catch (error) {
