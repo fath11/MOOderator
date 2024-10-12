@@ -19,6 +19,28 @@ module.exports = {
           console.error('Failed to timeout the user:', error);
         }
         break;
+      case "iamfeelinglucky":
+        const luckyNumber = Math.floor(Math.random() * 101); // Generate a random number between 0 and 100
+        let response;
+        if (luckyNumber > 75) {
+          response = `🎉 You got a lucky number: ${luckyNumber}! You're very lucky today!`;
+        } else if (luckyNumber == 69) {
+          response = `😊 You got the number 69. Not bad you naughty creature!`;
+        } else if (luckyNumber > 50) {
+          response = `😊 You got the number ${luckyNumber}. Not bad!`;
+        } else if (!luckyNumber == 0) {
+          response = `😕 You got the number ${luckyNumber}. Better luck next time!`;
+        } else {
+          response = `🫡 Well well well, you lost quite hard there... Now, Give. Me. Your. NG.`;
+          try {
+            await message.member.timeout(10 * 60 * 1000, 'gambled too much');
+          } catch(e)  {
+            response = `😡 You got 0 but i can't timeout you. Check your closet tonight`
+          }
+        }
+
+        await message.reply(response);
+        break;
     }
   }
 }
