@@ -10,7 +10,7 @@ module.exports = {
     const command = args.shift().toLowerCase();
 
     switch(command) {
-      case "banish":
+      case "ihatemyself": //gyatt
         const duration = 60 * 1000; // 1 minute in milliseconds
         try {
           await message.member.timeout(duration, 'Taking a rest');
