@@ -85,13 +85,13 @@ module.exports = {
           embeds: [reasonEmbed]
         });
 
-        await confirmation.update({ content: `User **${user.tag}** has been timed out for **${duration}**`, components: [], embed: [reasonEmbed] });
+        await confirmation.update({ content: `User **${user.tag}** has been timed out for **${duration}**`, components: [], embeds: [reasonEmbed] });
       } else if (confirmation.customId === 'cancel') {
-        await confirmation.update({ content: 'Timeout cancelled', components: [], embed: [] });
+        await confirmation.update({ content: 'Timeout cancelled', components: [], embeds: [] });
       }
 
     } catch (error) {
-      await interaction.editReply({ content: 'Confirmation not received within 1 minute, cancelling', components: [], embed: []});
+      await interaction.editReply({ content: 'Confirmation not received within 1 minute, cancelling', components: [], embeds: []});
     }
   },
 };
