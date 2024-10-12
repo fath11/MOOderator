@@ -10,11 +10,11 @@ module.exports = {
     const command = args.shift().toLowerCase();
 
     switch(command) {
-      case "ihatemyself": //gyatt
+      case "ihatemyself":
         const duration = 60 * 1000; // 1 minute in milliseconds
         try {
           await message.member.timeout(duration, 'Taking a rest');
-          message.reply("You are banished for 1 minute! \n It's time for you to exit Discord and take a rest.");
+          message.reply("DO NOT SAY THAT. You deserves to be loved and cared, you are special, believe in yourself, we care about you. \n You should take some time off of Discord and take a rest, stay strong for me will ya 💪");
         } catch (error) {
           console.error('Failed to timeout the user:', error);
           message.reply('Failed to timeout the user.');
