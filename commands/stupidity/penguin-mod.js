@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 
-const roasts = [
+const jokes = [
   "can I adopt a penguin 🥺 ",
   "penguin sounds like a dinner <:SunXiaoDithink:1203609168540340294><:SunXiaoDithink:1203609168540340294>",
   "please don't raid us <:Pandasad:1203609153910611999> ",
@@ -17,7 +17,8 @@ const roasts = [
   "we stole your joe <:Pandaevil:1203610048186556426>",
   "gandi ide is better *-this message is sponsored by turbowarp*",
   "turbowarp is simpler than you <:turtle_downvote:1156407649785630852> ",
-  "are you talking about the costume editor?"
+  "are you talking about the costume editor?",
+  "this is the cringiest command you gave me, i will fucking find you"
 ];
 
 module.exports = {
@@ -25,7 +26,7 @@ module.exports = {
     .setName('penguin-mod')
     .setDescription('PenguinMod'),
   async execute(interaction) {
-    const randomRoast = roasts[Math.floor(Math.random() * roasts.length)];
+    const randomRoast = jokes[Math.floor(Math.random() * jokes.length)];
     await interaction.reply(randomRoast);
   },
 };
