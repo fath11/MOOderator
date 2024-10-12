@@ -83,7 +83,7 @@ module.exports = {
           content: `You have been timed out for **${duration}** in **${interaction.guild.name}**`,
           embeds: [reasonEmbed]
         });
-        
+
         await member.timeout(durationMs, reason);
 
         await confirmation.update({ content: `User **${user.tag}** has been timed out for **${duration}**`, components: [], embeds: [reasonEmbed] });
@@ -92,7 +92,8 @@ module.exports = {
       }
 
     } catch (error) {
-      await interaction.editReply({ content: 'Confirmation not received within 1 minute, cancelling', components: [], embeds: []});
+      console.error('Failed to timeout the user:', error);
+      await interaction.editReply({ content: 'Confirmation not received, cancelling', components: [], embeds: []});
     }
   },
 };

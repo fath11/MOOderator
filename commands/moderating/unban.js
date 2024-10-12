@@ -2,16 +2,16 @@ const { SlashCommandBuilder, PermissionFlagsBits, ButtonBuilder, ActionRowBuilde
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('ban')
-    .setDescription('Ban someone for whatever reason.')
+    .setName('unban')
+    .setDescription('Unban someone for whatever reason.')
     .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
     .addUserOption(option => 
       option.setName('user')
-        .setDescription('The user to ban')
+        .setDescription('The user to unban')
         .setRequired(true))
     .addStringOption(option => 
       option.setName('reason')
-        .setDescription('The reason for the ban')
+        .setDescription('The reason for the unban')
         .setRequired(true)),
 
   async execute(interaction) {
@@ -27,7 +27,7 @@ module.exports = {
 
     const confirm = new ButtonBuilder()
 			.setCustomId('confirm')
-			.setLabel('Confirm Ban')
+			.setLabel('Confirm Unban')
 			.setStyle(ButtonStyle.Danger);
 
 		const cancel = new ButtonBuilder()
@@ -38,7 +38,7 @@ module.exports = {
     const row = new ActionRowBuilder().addComponents(cancel, confirm);
 
 		const response = await interaction.reply({
-			content: `Are you sure you want to ban **${user}**?`,
+			content: `Are you sure you want to unban **${user}**?`,
 			components: [row],
       embeds: [reasonEmbed]
 		});
@@ -47,26 +47,16 @@ module.exports = {
     try {
       const confirmation = await response.awaitMessageComponent({ filter: collectorFilter, time: 60_000 });
 
-      const member = await interaction.guild.members.fetch(user.id);
-      if (!member) {
-        return interaction.reply('User not found in this guild.');
-      }
-
       if (confirmation.customId === 'confirm') {
-        await user.send({
-          content: `You have been banned from **${interaction.guild.name}**`,
-          embeds: [reasonEmbed]
-        });
+        await interaction.guild.members.unban(user.id);
 
-        await interaction.guild.members.ban(member, { reason });
-
-        await confirmation.update({ content: `User **${user.tag}** has been banned`, components: [], embeds: [reasonEmbed] });
+        await confirmation.update({ content: `User **${user.tag}** has been unbanned`, components: [], embeds: [reasonEmbed] });
       } else if (confirmation.customId === 'cancel') {
-        await confirmation.update({ content: 'Ban cancelled', components: [], embeds: [] });
+        await confirmation.update({ content: 'unban cancelled', components: [], embeds: [] });
       }
 
     } catch (error) {
-      console.error('Failed to ban the user:', error);
+      console.error('Failed to unban the user:', error);
       await interaction.editReply({ content: 'Confirmation not received, cancelling', components: [], embeds: []});
     }
   },
