@@ -17,7 +17,6 @@ module.exports = {
           await message.member.timeout(duration, 'Take a rest from this evil place...');
         } catch (error) {
           console.error('Failed to timeout the user:', error);
-          message.reply('Failed to timeout the user.');
         }
         break;
     }
