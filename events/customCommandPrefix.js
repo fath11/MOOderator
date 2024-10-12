@@ -35,7 +35,7 @@ module.exports = {
           try {
             await message.member.timeout(10 * 60 * 1000, 'gambled too much');
           } catch(e)  {
-            response = `😡 You got 0 but i can't timeout you. Check your closet tonight`
+            response = `😡 You got 0 but i can't timeout you. Check your closet tonight.`
           }
         }
 
