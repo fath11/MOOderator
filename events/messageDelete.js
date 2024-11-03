@@ -1,3 +1,4 @@
+const { Message } = require('discord.js');
 const { Events, AuditLogEvent, EmbedBuilder, messageLink } = require('discord.js');
 const fs = require('node:fs');
 
@@ -60,9 +61,9 @@ module.exports = {
         const messagesAfter = await message.channel.messages.fetch({ limit: 5, after: message.id });
         const messagesAfterArray = Array.from(messagesAfter.values());
 
-        let additionalContext = messagesBeforeArray.reverse().map(msg => (`**${truncateMessage(msg.content)}** - ${msg.author.tag} \n`))
+        let additionalContext = messagesBeforeArray.reverse().map(msg => (`[${truncateMessage(msg.content)}](${messageLink(msg.channel.id, msg.id)}) - ${msg.author.tag} \n`))
         additionalContext.push('\n *deleted message* \n\n')
-        additionalContext = additionalContext.concat(...messagesAfterArray.reverse().map(msg => (`**${truncateMessage(msg.content)}** - ${msg.author.tag} \n`)))
+        additionalContext = additionalContext.concat(...messagesAfterArray.reverse().map(msg => (`[${truncateMessage(msg.content)}](${messageLink(msg.channel.id, msg.id)}) - ${msg.author.tag} \n`)))
 
         if (deletionLog) {
             const deletedMessageEmbed = new EmbedBuilder()
@@ -78,14 +79,21 @@ module.exports = {
             const additionalContextEmbed = new EmbedBuilder()
                 .setColor(0x696969)
                 .setTitle('Additional context')
-                .setDescription(`${additionalContext.join('')}`)   
+                .setDescription(`${additionalContext.join('')}`)
+            
 
             let embeds = [deletedMessageEmbed, additionalContextEmbed]
             if (replyEmbed) embeds = [replyEmbed, deletedMessageEmbed, additionalContextEmbed]
+
+            let attachments = []
+            message.attachments.forEach((value, key) => {
+                attachments.push(value)
+            });
             
             logChannel.send({
                 content: `<@${deletionLog.executor.id}> deleted a message by <@${message.author.id}> in <#${message.channel.id}>`,
-                embeds: embeds
+                embeds: embeds,
+                files: attachments
             });
         }
     }
