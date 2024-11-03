@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits} = require('discord.js');
+const fs = require('node:fs');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -14,12 +15,17 @@ module.exports = {
 
   execute(interaction) {
     const amount = interaction.options.getInteger('amount');
-
-    if (amount > 100) interaction.reply('Cannot purge more than 100 messages')
-    if (amount < 2) interaction.reply('You must purge at least 2 messages')
+    
+    const logChannelId = JSON.parse(fs.readFileSync('./config.json', 'utf8')).logChannelId;
+    const logChannel = interaction.guild.channels.cache.get(logChannelId);
+    if (!logChannel) {
+        interaction.reply("Log channel not set. Use `/logchannel channel:your-server's-log-channel` and set one.");
+        return;
+    }
 
     interaction.channel.bulkDelete(amount).then(() => {
-      interaction.reply(`Purged ${amount} messages!`)
+      interaction.reply({ content: `Purged ${amount} messages!`, ephemeral: true })
+      logChannel.send(`<@${interaction.user.id}> purged ${amount} messages!`)
       interaction.channel.send(`https://tenor.com/view/mib-flash-forget-will-smith-gif-13783743`)
     })
   },
