@@ -1,5 +1,5 @@
 const { Events, AuditLogEvent, EmbedBuilder, messageLink, Entitlement } = require('discord.js');
-const fs = require('node:fs');
+const { getLogChannel } = require('../utils')
 
 const MAX_MESSAGE_LENGTH = 50; // Maximum length for each message part
 const MAX_MESSAGES = 5; // Maximum number of messages to include above and below
@@ -23,12 +23,7 @@ module.exports = {
             }
         }
 
-        const logChannelId = JSON.parse(fs.readFileSync('./config.json', 'utf8')).logChannelId;
-        const logChannel = message.guild.channels.cache.get(logChannelId);
-        if (!logChannel) {
-            message.reply("Log channel not set. Use `/logchannel channel:your-server's-log-channel` and set one.");
-            return;
-        }
+        const logChannel = getLogChannel(message)
 
         let executor = 'Unknown'
         const fetchedLogs = await message.guild.fetchAuditLogs({
@@ -105,7 +100,7 @@ module.exports = {
         } else {
             logChannel.send({
                 content: `<@${message.author.id}> deleted their message in <#${message.channel.id}>
--# Just like any moderating bot, the above log above may be inaccurate.`,
+-# Just like any moderating bot, the above log message may be inaccurate.`,
                 embeds: embeds,
                 files: attachments
             });

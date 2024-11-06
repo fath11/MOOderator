@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits} = require('discord.js');
-const fs = require('node:fs');
+const { getLogChannel } = require('../../utils')
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -16,12 +16,7 @@ module.exports = {
   execute(interaction) {
     const amount = interaction.options.getInteger('amount');
     
-    const logChannelId = JSON.parse(fs.readFileSync('./config.json', 'utf8')).logChannelId;
-    const logChannel = interaction.guild.channels.cache.get(logChannelId);
-    if (!logChannel) {
-        interaction.reply("Log channel not set. Use `/logchannel channel:your-server's-log-channel` and set one.");
-        return;
-    }
+    const logChannel = getLogChannel(interaction)
 
     interaction.channel.bulkDelete(amount).then(() => {
       interaction.reply({ content: `Purged ${amount} messages!`, ephemeral: true })
