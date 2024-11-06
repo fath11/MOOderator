@@ -105,7 +105,7 @@ module.exports = {
         } else {
             logChannel.send({
                 content: `<@${message.author.id}> deleted their message in <#${message.channel.id}>
--# Just like any moderating bot, the following log above may be inaccurate.`,
+-# Just like any moderating bot, the above log above may be inaccurate.`,
                 embeds: embeds,
                 files: attachments
             });
