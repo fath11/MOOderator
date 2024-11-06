@@ -1,5 +1,4 @@
-const { Message } = require('discord.js');
-const { Events, AuditLogEvent, EmbedBuilder, messageLink } = require('discord.js');
+const { Events, AuditLogEvent, EmbedBuilder, messageLink, Entitlement } = require('discord.js');
 const fs = require('node:fs');
 
 const MAX_MESSAGE_LENGTH = 50; // Maximum length for each message part
@@ -31,12 +30,19 @@ module.exports = {
             return;
         }
 
+        let executor = 'Unknown'
         const fetchedLogs = await message.guild.fetchAuditLogs({
-            limit: 1,
+            limit: 2,
             type: AuditLogEvent.MessageDelete,
-        });
+        }).then((log) => {
+            log.entries.forEach(entry => {
+                if(!(entry.target.id === message.author.id)) return;
+                if(!(entry.extra.channel.id === message.channel.id)) return;
+                if(!(Date.now() - entry.createdTimestamp < 20000)) return;
 
-        const deletionLog = fetchedLogs.entries.first();
+                executor = entry.executor
+            });
+        });
 
         let replyEmbed = undefined
         if (message.reference) {
@@ -65,33 +71,41 @@ module.exports = {
         additionalContext.push('\n *deleted message* \n\n')
         additionalContext = additionalContext.concat(...messagesAfterArray.reverse().map(msg => (`[${truncateMessage(msg.content)}](${messageLink(msg.channel.id, msg.id)}) - ${msg.author.tag} \n`)))
 
-        if (deletionLog) {
-            const deletedMessageEmbed = new EmbedBuilder()
-                .setColor(0xfc0303)
-                .setTitle('Deleted message')
-                .setDescription(message.content)
-                .setFooter({
-                    text: `by ${message.author.tag} at ${message.createdAt.toLocaleString()}`,
-                    iconURL: message.author.displayAvatarURL()
-                })
-                .setURL(messageLink(message.channel.id, message.id));
-            
-            const additionalContextEmbed = new EmbedBuilder()
-                .setColor(0x696969)
-                .setTitle('Additional context')
-                .setDescription(`${additionalContext.join('')}`)
-            
+        const deletedMessageEmbed = new EmbedBuilder()
+            .setColor(0xfc0303)
+            .setTitle('Deleted message')
+            .setDescription(message.content)
+            .setFooter({
+                text: `by ${message.author.tag} at ${message.createdAt.toLocaleString()}`,
+                iconURL: message.author.displayAvatarURL()
+            })
+            .setURL(messageLink(message.channel.id, message.id));
+        
+        const additionalContextEmbed = new EmbedBuilder()
+            .setColor(0x696969)
+            .setTitle('Additional context')
+            .setDescription(`${additionalContext.join('')}`)
+        
 
-            let embeds = [deletedMessageEmbed, additionalContextEmbed]
-            if (replyEmbed) embeds = [replyEmbed, deletedMessageEmbed, additionalContextEmbed]
+        let embeds = [deletedMessageEmbed, additionalContextEmbed]
+        if (replyEmbed) embeds = [replyEmbed, deletedMessageEmbed, additionalContextEmbed]
 
-            let attachments = []
-            message.attachments.forEach((value, key) => {
-                attachments.push(value)
-            });
-            
+        let attachments = []
+        message.attachments.forEach((value, key) => {
+            attachments.push(value)
+        });
+        
+        if(executor.id && executor.id !== message.author.id) {
             logChannel.send({
-                content: `<@${deletionLog.executor.id}> deleted a message by <@${message.author.id}> in <#${message.channel.id}>`,
+                content: `<@${executor.id}> deleted a message by <@${message.author.id}> in <#${message.channel.id}>
+-# Just like any moderating bot, the above log message may be inaccurate.`,
+                embeds: embeds,
+                files: attachments
+            });
+        } else {
+            logChannel.send({
+                content: `<@${message.author.id}> deleted their message in <#${message.channel.id}>
+-# Just like any moderating bot, the following log above may be inaccurate.`,
                 embeds: embeds,
                 files: attachments
             });
