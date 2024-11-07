@@ -32,7 +32,7 @@ module.exports = {
       const turtle = /^\🐢\s([0-9]{1,3})\s\-\s(https:\/\/discord\.com\/channels\/@me\/)([0-9]{17,20})\/([0-9]{17,20})/.exec(turtles.content);
 
       const turtMsg = await turtleChannel.messages.fetch(turtles.id);
-      if(reaction.coun < 7) {
+      if(reaction.count < 7) {
         turtMsg.delete()
       }
 
