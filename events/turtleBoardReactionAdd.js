@@ -64,7 +64,7 @@ module.exports = {
         embeds: [embed]
       });
     }
-    if (!turtles && reaction.count > 7) {
+    if (!turtles && reaction.count >= 7) {
       let attachments = []
       message.attachments.forEach((value, key) => {
           attachments.push(value)
