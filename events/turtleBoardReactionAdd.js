@@ -59,7 +59,7 @@ module.exports = {
         })
 
       await turtMsg.edit({
-        content:  `🐢 ${parseInt(turtle[1])+1} - ${messageLink(message.channel.id, message.id)}}`,
+        content:  `🐢 ${reaction.count} - ${messageLink(message.channel.id, message.id)}}`,
         attachments: attachments,
         embeds: [embed]
       });
@@ -79,7 +79,7 @@ module.exports = {
         })
 
       await turtleChannel.send({
-        content:  `🐢 7 - ${messageLink(message.channel.id, message.id)}`,
+        content:  `🐢 ${reaction.count} - ${messageLink(message.channel.id, message.id)}`,
         attachments: attachments,
         embeds: [embed]
       });

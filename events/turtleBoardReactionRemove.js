@@ -32,7 +32,7 @@ module.exports = {
       const turtle = /^\🐢\s([0-9]{1,3})\s\-\s(https:\/\/discord\.com\/channels\/@me\/)([0-9]{17,20})\/([0-9]{17,20})/.exec(turtles.content);
 
       const turtMsg = await turtleChannel.messages.fetch(turtles.id);
-      if(parseInt(turtle[1])-1 < 7) {
+      if(reaction.coun < 7) {
         turtMsg.delete()
       }
 
@@ -51,7 +51,7 @@ module.exports = {
         })
 
       await turtMsg.edit({
-        content:  `🐢 ${parseInt(turtle[1])-1} - ${messageLink(message.channel.id, message.id)}}`,
+        content:  `🐢 ${reaction.count} - ${messageLink(message.channel.id, message.id)}}`,
         attachments: attachments,
         embeds: [embed]
       });
