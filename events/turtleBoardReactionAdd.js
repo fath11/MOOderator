@@ -79,7 +79,7 @@ module.exports = {
         })
 
       await turtleChannel.send({
-        content:  `🐢 1 - ${messageLink(message.channel.id, message.id)}`,
+        content:  `🐢 7 - ${messageLink(message.channel.id, message.id)}`,
         attachments: attachments,
         embeds: [embed]
       });
